@@ -185,7 +185,7 @@ class Service:
         values = {}
         if self.type == "compute":
             if "compute" in self.compute_values:
-                values.update(self.compute_values)
+                values |= self.compute_values
             else:
                 values["compute"] = self.compute_values
 

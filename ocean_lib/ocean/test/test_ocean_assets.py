@@ -483,9 +483,7 @@ def test_plain_asset_multiple_datatokens(
     assert len(ddo.datatokens) == 2
     assert ddo.credentials == build_credentials_dict()
 
-    datatoken_names = []
-    for datatoken in ddo.datatokens:
-        datatoken_names.append(datatoken["name"])
+    datatoken_names = [datatoken["name"] for datatoken in ddo.datatokens]
     assert datatoken_names[0] == "Datatoken 2"
     assert datatoken_names[1] == "Datatoken 3"
 

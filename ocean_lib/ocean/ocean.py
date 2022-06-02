@@ -185,8 +185,7 @@ class Ocean:
 
         address = nft_factory.get_token_address(tx_id)
         assert address, "new NFT token has no address"
-        token = DataNFT(self.web3, address)
-        return token
+        return DataNFT(self.web3, address)
 
     @enforce_types
     def get_nft_token(self, token_address: str) -> DataNFT:
@@ -290,9 +289,7 @@ class Ocean:
             self.web3.eth.block_number,
             None,
         )
-        exchange_id = fixed_rate_event[0].args.exchangeId
-
-        return exchange_id
+        return fixed_rate_event[0].args.exchangeId
 
     @property
     @enforce_types
@@ -343,9 +340,7 @@ class Ocean:
         )
 
         bpool_address = pool_event[0].args.poolAddress
-        bpool = BPool(self.web3, bpool_address)
-
-        return bpool
+        return BPool(self.web3, bpool_address)
 
     @enforce_types
     def retrieve_provider_fees(

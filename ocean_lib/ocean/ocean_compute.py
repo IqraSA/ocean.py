@@ -109,9 +109,7 @@ class OceanCompute:
         :param wallet: Wallet instance
         :return: dict the results/logs urls for an existing compute job, keys are (did, urls, logs)
         """
-        result = self._data_provider.compute_job_result(job_id, index, service, wallet)
-
-        return result
+        return self._data_provider.compute_job_result(job_id, index, service, wallet)
 
     @enforce_types
     def compute_job_result_logs(
@@ -131,11 +129,9 @@ class OceanCompute:
         :param wallet: Wallet instance
         :return: dict the results/logs urls for an existing compute job, keys are (did, urls, logs)
         """
-        result = self._data_provider.compute_job_result_logs(
+        return self._data_provider.compute_job_result_logs(
             asset, job_id, service, wallet, log_type
         )
-
-        return result
 
     @enforce_types
     def stop(

@@ -19,7 +19,7 @@ def test_chain_id_send_ether(alice_wallet, bob_address):
     tx = alice_wallet.web3.eth.get_transaction(receipt["transactionHash"])
     # Formula: v = CHAIN_ID * 2 + 35 or v = CHAIN_ID * 2 + 36
     chain_ids = [(tx["v"] - 35) / 2, (tx["v"] - 36) / 2]
-    result = True if alice_wallet.web3.eth.chain_id in chain_ids else False
+    result = alice_wallet.web3.eth.chain_id in chain_ids
     assert result, "The chain ID is not the right one."
 
 
@@ -32,7 +32,7 @@ def test_chain_id_cancel_or_replace_transaction(alice_wallet, bob_address):
         receipt_cancelled["transactionHash"]
     )
     chain_ids = [(tx_cancelled["v"] - 35) / 2, (tx_cancelled["v"] - 36) / 2]
-    result_cancelled = True if alice_wallet.web3.eth.chain_id in chain_ids else False
+    result_cancelled = alice_wallet.web3.eth.chain_id in chain_ids
     assert result_cancelled, "The chain ID is not the right one."
 
 

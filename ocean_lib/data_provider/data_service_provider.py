@@ -493,8 +493,9 @@ class DataServiceProvider:
         :return: dict of job_id to result urls.
         """
         nonce, signature = DataServiceProvider.sign_message(
-            consumer, f"{consumer.address}{job_id}{str(index)}"
+            consumer, f"{consumer.address}{job_id}{index}"
         )
+
 
         req = PreparedRequest()
         params = {
@@ -565,10 +566,8 @@ class DataServiceProvider:
     @staticmethod
     @enforce_types
     def _remove_slash(path: str) -> str:
-        if path.endswith("/"):
-            path = path[:-1]
-        if path.startswith("/"):
-            path = path[1:]
+        path = path.removesuffix("/")
+        path = path.removeprefix("/")
         return path
 
     @staticmethod
@@ -602,9 +601,7 @@ class DataServiceProvider:
             _, envs_endpoint = DataServiceProvider.build_c2d_environments_endpoint(
                 provider_uri
             )
-            environments = DataServiceProvider._http_method("get", envs_endpoint).json()
-
-            return environments
+            return DataServiceProvider._http_method("get", envs_endpoint).json()
         except requests.exceptions.RequestException:
             pass
 
@@ -648,9 +645,9 @@ class DataServiceProvider:
             raise InvalidURL(f"InvalidURL {service_endpoint}.")
 
         try:
-            root_result = "/".join(parts[0:3])
+            root_result = "/".join(parts[:3])
             response = requests.get(root_result).json()
-        except (requests.exceptions.RequestException, JSONDecodeError):
+        except requests.exceptions.RequestException:
             raise InvalidURL(f"InvalidURL {service_endpoint}.")
 
         if "providerAddress" not in response:
@@ -785,7 +782,6 @@ class DataServiceProvider:
             return None
 
     @staticmethod
-    # @enforce_types omitted due to subscripted generics error
     def _prepare_compute_payload(
         consumer: Wallet,
         dataset: ComputeInput,
@@ -840,15 +836,12 @@ class DataServiceProvider:
             payload["dataset"]["userdata"] = dataset.userdata
 
         if algorithm:
-            payload.update(
-                {
-                    "algorithm": {
-                        "documentId": algorithm.did,
-                        "serviceId": algorithm.service_id,
-                        "transferTxId": algorithm.transfer_tx_id,
-                    }
-                }
-            )
+            payload["algorithm"] = {
+                "documentId": algorithm.did,
+                "serviceId": algorithm.service_id,
+                "transferTxId": algorithm.transfer_tx_id,
+            }
+
             if algorithm.userdata:
                 payload["algorithm"]["userdata"] = algorithm.userdata
             if algorithm_custom_data:

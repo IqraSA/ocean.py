@@ -43,17 +43,15 @@ class ConsumerParameters:
     ) -> "ConsumerParameters":
         """Create a ConsumerParameters object from a JSON string."""
         cpd = copy.deepcopy(consumer_parameters_dict)
-        missing_attributes = [
+        if missing_attributes := [
             x for x in ConsumerParameters.required_attrs() if x not in cpd.keys()
-        ]
-
-        if missing_attributes:
+        ]:
             raise TypeError(
                 "ConsumerParameters is missing the keys "
                 + ", ".join(missing_attributes)
             )
 
-        required = cpd["required"] if "required" in cpd else None
+        required = cpd.get("required")
 
         return cls(
             cpd["name"],

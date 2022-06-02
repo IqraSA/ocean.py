@@ -198,12 +198,11 @@ class ContractBase(object):
             "gasPrice": self.get_gas_price(self.web3),
         }
 
-        gas_price = os.environ.get(ENV_GAS_PRICE, None)
-        if gas_price:
+        if gas_price := os.environ.get(ENV_GAS_PRICE, None):
             _transact["gasPrice"] = gas_price
 
         if transact:
-            _transact.update(transact)
+            _transact |= transact
 
         return contract_function.transact(
             _transact,
@@ -218,8 +217,7 @@ class ContractBase(object):
         :param event_name: str Name of the event to search in the `contract`.
         :return: `event.argument_names` if event is found or None
         """
-        event = getattr(self.contract.events, event_name, None)
-        if event:
+        if event := getattr(self.contract.events, event_name, None):
             return event().argument_names
 
     @classmethod
@@ -287,7 +285,7 @@ class ContractBase(object):
                     event, argument_filters=filters, fromBlock=_from, toBlock=_to
                 )
                 all_logs.extend(logs)
-                if len(all_logs) >= 1:
+                if all_logs:
                     break
                 _to = _from - 1
                 _from = max(_to - chunk + 1, from_block)
@@ -438,7 +436,7 @@ class ContractBase(object):
         abi = event._get_event_abi()
 
         if argument_filters is None:
-            argument_filters = dict()
+            argument_filters = {}
 
         _filters = dict(**argument_filters)
 
@@ -451,7 +449,7 @@ class ContractBase(object):
 
         # Construct JSON-RPC raw filter presentation based on human readable Python descriptions
         # Namely, convert event names to their keccak signatures
-        address = event.address if not from_all_addresses else None
+        address = None if from_all_addresses else event.address
         _, event_filter_params = construct_event_filter_params(
             abi,
             event.web3.codec,

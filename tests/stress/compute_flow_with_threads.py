@@ -194,7 +194,7 @@ def c2d_flow_readme(
 
     # Wait until job is done
     succeeded = False
-    for _ in range(0, 200):
+    for _ in range(200):
         status = ocean.compute.status(
             DATA_asset, compute_service, job_id, consumer_wallet
         )

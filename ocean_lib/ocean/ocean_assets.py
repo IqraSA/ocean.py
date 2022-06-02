@@ -363,12 +363,10 @@ class OceanAssets:
             logger.info(
                 f"Successfully created NFT with address " f"{data_nft.address}."
             )
-        else:
-            # verify nft address
-            if not data_nft_factory.verify_nft(data_nft_address):
-                raise ContractNotFound(
-                    f"NFT address {data_nft_address} is not found in the DataNFTFactory events."
-                )
+        elif not data_nft_factory.verify_nft(data_nft_address):
+            raise ContractNotFound(
+                f"NFT address {data_nft_address} is not found in the DataNFTFactory events."
+            )
 
         assert (
             data_nft_address
@@ -391,7 +389,7 @@ class OceanAssets:
         asset.chain_id = self._web3.eth.chain_id
         asset.metadata = metadata
 
-        asset.credentials = credentials if credentials else {"allow": [], "deny": []}
+        asset.credentials = credentials or {"allow": [], "deny": []}
 
         datatoken_addresses = []
         services = services or []
@@ -432,20 +430,15 @@ class OceanAssets:
             for datatoken_address in datatoken_addresses:
                 deployed_datatokens.append(Datatoken(self._web3, datatoken_address))
 
-            datatokens = self.build_datatokens_list(
-                services=services, deployed_datatokens=deployed_datatokens
-            )
-        else:
-            if not services:
-                for datatoken in deployed_datatokens:
-                    services = self._add_defaults(
-                        services, datatoken.address, encrypted_files, provider_uri
-                    )
+        elif not services:
+            for datatoken in deployed_datatokens:
+                services = self._add_defaults(
+                    services, datatoken.address, encrypted_files, provider_uri
+                )
 
-            datatokens = self.build_datatokens_list(
-                services=services, deployed_datatokens=deployed_datatokens
-            )
-
+        datatokens = self.build_datatokens_list(
+            services=services, deployed_datatokens=deployed_datatokens
+        )
         asset.nft_address = data_nft_address
         asset.datatokens = datatokens
 
@@ -648,7 +641,7 @@ class OceanAssets:
         initialize_response = data_provider.initialize(**initialize_args)
         provider_fees = initialize_response.json()["providerFee"]
 
-        tx_id = dt.start_order(
+        return dt.start_order(
             consumer=consumer_address,
             service_index=asset.get_index_of_service(service),
             provider_fee_address=provider_fees["providerFeeAddress"],
@@ -664,8 +657,6 @@ class OceanAssets:
             consume_market_order_fee_amount=consume_market_order_fee_amount,
             from_wallet=wallet,
         )
-
-        return tx_id
 
     @enforce_types
     def pay_for_compute_service(

@@ -69,8 +69,7 @@ class EventFilter:
         i = 0
         while i < max_tries:
             try:
-                logs = entries_getter()
-                if logs:
+                if logs := entries_getter():
                     logger.debug(
                         f"found event logs: event-name={self.event.event_name}, "
                         f"range={self.block_range}, "
@@ -78,16 +77,15 @@ class EventFilter:
                     )
                     return logs
             except ValueError as e:
-                if "Filter not found" in str(e):
-                    logger.debug(
-                        f"recreating filter (Filter not found): event={self.event.event_name}, "
-                        f"arg-filter={self.argument_filters}, from/to={self.block_range}"
-                    )
-                    time.sleep(1)
-                    self._create_filter()
-                else:
+                if "Filter not found" not in str(e):
                     raise
 
+                logger.debug(
+                    f"recreating filter (Filter not found): event={self.event.event_name}, "
+                    f"arg-filter={self.argument_filters}, from/to={self.block_range}"
+                )
+                time.sleep(1)
+                self._create_filter()
             i += 1
             if max_tries > 1 and i < max_tries:
                 time.sleep(0.5)
