@@ -27,6 +27,4 @@ def resolve_asset(did: str, metadata_cache_uri: str) -> Asset:
     assert metadata_cache_uri, "metadata_cache_uri is required."
 
     logger.debug(f"found did {did} -> url={metadata_cache_uri}")
-    ddo = Aquarius.get_instance(metadata_cache_uri).get_asset_ddo(did)
-
-    return ddo
+    return Aquarius.get_instance(metadata_cache_uri).get_asset_ddo(did)

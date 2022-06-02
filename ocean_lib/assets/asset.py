@@ -124,9 +124,9 @@ class Asset(AddressCredential):
             "id": self.did,
             "version": self.version,
             "chainId": self.chain_id,
+            "nftAddress": self.nft_address,
         }
 
-        data["nftAddress"] = self.nft_address
 
         services = [value.as_dictionary() for value in self.services]
         args = ["metadata", "credentials", "nft", "datatokens", "event", "stats"]
@@ -137,7 +137,7 @@ class Asset(AddressCredential):
             )
         )
         attrs.append(("services", services))
-        data.update(attrs)
+        data |= attrs
         return data
 
     @enforce_types

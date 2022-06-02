@@ -87,7 +87,7 @@ class Wallet:
     @staticmethod
     @enforce_types
     def reset_tx_count() -> None:
-        Wallet._last_tx_count = dict()
+        Wallet._last_tx_count = {}
 
     @enforce_types
     def validate(self) -> bool:
@@ -119,8 +119,9 @@ class Wallet:
         if fixed_nonce is not None:
             nonce = fixed_nonce
             logger.debug(
-                f"Signing transaction using a fixed nonce {fixed_nonce}, tx params are: {tx}"
+                f"Signing transaction using a fixed nonce {nonce}, tx params are: {tx}"
             )
+
         else:
             nonce = Wallet._get_nonce(self.web3, account.address)
 

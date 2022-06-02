@@ -231,11 +231,12 @@ def run_compute_test(
     if "just_fees" in scenarios:
         fees_response = ocean_instance.retrieve_provider_fees_for_compute(
             datasets,
-            algorithm if algorithm else algorithm_meta,
+            algorithm or algorithm_meta,
             consumer_address=environments[0]["consumerAddress"],
             compute_environment=environments[0]["id"],
             valid_until=int((datetime.utcnow() + time_difference).timestamp()),
         )
+
 
         assert "algorithm" in fees_response
         assert len(fees_response["datasets"]) == 1
@@ -244,13 +245,14 @@ def run_compute_test(
 
     datasets, algorithm = ocean_instance.assets.pay_for_compute_service(
         datasets,
-        algorithm if algorithm else algorithm_meta,
+        algorithm or algorithm_meta,
         consumer_address=environments[0]["consumerAddress"],
         compute_environment=environments[0]["id"],
         valid_until=int((datetime.utcnow() + time_difference).timestamp()),
         consume_market_order_fee_address=consumer_wallet.address,
         wallet=consumer_wallet,
     )
+
 
     # Start compute job
     job_id = ocean_instance.compute.start(
@@ -280,7 +282,7 @@ def run_compute_test(
 
     if "with_result" in scenarios:
         succeeded = False
-        for _ in range(0, 200):
+        for _ in range(200):
             status = ocean_instance.compute.status(
                 dataset_and_userdata.asset, service, job_id, consumer_wallet
             )
@@ -311,13 +313,16 @@ def run_compute_test(
         # retry initialize but all orders are already valid
         datasets, algorithm = ocean_instance.assets.pay_for_compute_service(
             datasets,
-            algorithm if algorithm else algorithm_meta,
+            algorithm or algorithm_meta,
             consumer_address=environments[0]["consumerAddress"],
             compute_environment=environments[0]["id"],
-            valid_until=int((datetime.utcnow() + timedelta(hours=1)).timestamp()),
+            valid_until=int(
+                (datetime.utcnow() + timedelta(hours=1)).timestamp()
+            ),
             consume_market_order_fee_address=consumer_wallet.address,
             wallet=consumer_wallet,
         )
+
 
         # transferTxId was not updated
         assert datasets[0].transfer_tx_id == prev_dt_tx_id
@@ -330,13 +335,16 @@ def run_compute_test(
         time.sleep(time_difference.seconds + 1)
         datasets, algorithm = ocean_instance.assets.pay_for_compute_service(
             datasets,
-            algorithm if algorithm else algorithm_meta,
+            algorithm or algorithm_meta,
             consumer_address=environments[0]["consumerAddress"],
             compute_environment=environments[0]["id"],
-            valid_until=int((datetime.utcnow() + timedelta(hours=1)).timestamp()),
+            valid_until=int(
+                (datetime.utcnow() + timedelta(hours=1)).timestamp()
+            ),
             consume_market_order_fee_address=consumer_wallet.address,
             wallet=consumer_wallet,
         )
+
 
         assert datasets[0].transfer_tx_id != prev_dt_tx_id
         assert algorithm.transfer_tx_id != prev_algo_tx_id

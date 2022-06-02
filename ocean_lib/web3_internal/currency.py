@@ -85,7 +85,7 @@ def normalize_and_validate_unit(
 ) -> Decimal:
     """Returns an amount in ether, encoded as a Decimal
     Takes Decimal, str, or int as input. Purposefully does not support float."""
-    if isinstance(amount, str) or isinstance(amount, int):
+    if isinstance(amount, (str, int)):
         amount = Decimal(amount)
 
     if abs(amount) > Decimal(MAX_WEI).scaleb(
@@ -120,9 +120,7 @@ def pretty_ether_and_wei(amount_in_wei: int, ticker: str = "") -> str:
     pretty_ether_and_wei(123456789_123456789_12345, "OCEAN") == "12.3K OCEAN (12345678912345678912345 wei)"
     pretty_ether_and_wei(123456789_123456789_123456789, "") == "123M (123456789123456789123456789 wei)"
     """
-    return "{} ({} wei)".format(
-        pretty_ether(from_wei(amount_in_wei), ticker), amount_in_wei
-    )
+    return f"{pretty_ether(from_wei(amount_in_wei), ticker)} ({amount_in_wei} wei)"
 
 
 @enforce_types
@@ -180,7 +178,9 @@ def pretty_ether(
             scaled = remove_trailing_zeros(scaled)
 
         return (
-            fmt_str.format(scaled) + " " + ticker if ticker else fmt_str.format(scaled)
+            f"{fmt_str.format(scaled)} {ticker}"
+            if ticker
+            else fmt_str.format(scaled)
         )
 
 
@@ -194,7 +194,7 @@ def ether_fmt(
     amount_in_ether = normalize_and_validate_unit(amount_in_ether)
     with localcontext(ETHEREUM_DECIMAL_CONTEXT):
         return (
-            moneyfmt(amount_in_ether, decimals) + " " + ticker
+            f"{moneyfmt(amount_in_ether, decimals)} {ticker}"
             if ticker
             else moneyfmt(amount_in_ether, decimals)
         )
@@ -260,12 +260,8 @@ def _trim_zero_to_3_digits_or_less(trim: bool, exponent: int, ticker: str) -> st
     if trim:
         zero = "0"
     else:
-        if exponent == -1:
-            zero = "0.0"
-        else:
-            zero = "0.00"
-
-    return zero + " " + ticker if ticker else zero
+        zero = "0.0" if exponent == -1 else "0.00"
+    return f"{zero} {ticker}" if ticker else zero
 
 
 @enforce_types

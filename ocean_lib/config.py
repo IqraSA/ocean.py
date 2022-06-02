@@ -212,7 +212,7 @@ class Config(configparser.ConfigParser):
                     )
 
                 # fallback to AQUARIUS_URL
-                value = metadata_cache_uri if metadata_cache_uri else aquarius_url
+                value = metadata_cache_uri or aquarius_url
             else:
                 value = os.environ.get(environ_item[0])
             if value is not None:

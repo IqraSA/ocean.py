@@ -35,13 +35,10 @@ class ComputeInput:
         self.service_id = service.id
         self.userdata = userdata
         self.consume_market_order_fee_token = (
-            consume_market_order_fee_token
-            if consume_market_order_fee_token
-            else ZERO_ADDRESS
+            consume_market_order_fee_token or ZERO_ADDRESS
         )
-        self.consume_market_order_fee_amount = (
-            consume_market_order_fee_amount if consume_market_order_fee_amount else 0
-        )
+
+        self.consume_market_order_fee_amount = consume_market_order_fee_amount or 0
 
     @enforce_types
     def as_dictionary(self) -> Dict[str, Union[str, Dict]]:

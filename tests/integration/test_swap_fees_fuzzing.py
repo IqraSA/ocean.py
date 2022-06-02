@@ -151,7 +151,7 @@ def test_fuzzing_pool_ocean(
 
             tx_receipt = web3.eth.wait_for_transaction_receipt(tx)
 
-            assert (datatoken.balanceOf(publisher_wallet.address) > 0) is True
+            assert datatoken.balanceOf(publisher_wallet.address) > 0
 
             swap_fee_event = bpool.get_event_log(
                 bpool.EVENT_LOG_SWAP,

@@ -508,14 +508,13 @@ class Datatoken(ContractBase):
 
         argument_filters = {"topics": topics}
 
-        logs = self.getLogs(
+        return self.getLogs(
             self.events.OrderStarted(),
             argument_filters=argument_filters,
             fromBlock=from_block,
             toBlock=to_block,
             from_all_addresses=from_all_tokens,
         )
-        return logs
 
 
 class MockERC20(Datatoken):

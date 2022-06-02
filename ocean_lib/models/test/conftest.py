@@ -102,6 +102,7 @@ def bob_info():
 
 def make_info(name, private_key_name):
     # assume that this account has ETH with gas.
+
     class _Info:
         pass
 
@@ -119,8 +120,7 @@ def make_info(name, private_key_name):
         transaction_timeout=config.transaction_timeout,
     )
     info.address = info.wallet.address
-    wallet = get_ganache_wallet()
-    if wallet:
+    if wallet := get_ganache_wallet():
         assert get_ether_balance(web3, wallet.address) >= to_wei(
             "4"
         ), "Ether balance less than 4."

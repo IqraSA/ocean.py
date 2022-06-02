@@ -136,8 +136,7 @@ def _create_malformed_conffile(tmp_path):
     d.mkdir()
     config_file = d / "test_config_bad.ini"
     config_file.write_text("Malformed content inside config file")
-    config_file_name = str(config_file)
-    return config_file_name
+    return str(config_file)
 
 
 @pytest.mark.unit

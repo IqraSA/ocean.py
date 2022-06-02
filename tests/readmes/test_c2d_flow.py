@@ -256,7 +256,7 @@ def c2d_flow_readme(
 
     # Wait until job is done
     succeeded = False
-    for _ in range(0, 200):
+    for _ in range(200):
         status = ocean.compute.status(DATA_asset, compute_service, job_id, bob_wallet)
         if status.get("dateFinished") and Decimal(status["dateFinished"]) > 0:
             print(f"Status = '{status}'")
@@ -271,7 +271,7 @@ def c2d_flow_readme(
     )[0]
     assert output, "algorithm output not found"
 
-    if dataset_name == "branin" or dataset_name == "iris":
+    if dataset_name in ["branin", "iris"]:
         unpickle_result(output)
     else:
         load_image(output)

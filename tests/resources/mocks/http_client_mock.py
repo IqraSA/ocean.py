@@ -32,10 +32,12 @@ class HttpClientMockBase(Session):
     @classmethod
     def get(cls, *args, **kwargs):
         """Handles the base case of service endpoints."""
-        is_get_endpoints_request = False
-        for (_, _, _, fn, _, _) in inspect.getouterframes(inspect.currentframe()):
-            if fn == "get_service_endpoints":
-                is_get_endpoints_request = True
+        is_get_endpoints_request = any(
+            fn == "get_service_endpoints"
+            for (_, _, _, fn, _, _) in inspect.getouterframes(
+                inspect.currentframe()
+            )
+        )
 
         if is_get_endpoints_request:
             the_response = Mock(spec=Response)
@@ -95,7 +97,7 @@ class HttpClientNiceMock(HttpClientMockBase):
     def return_nice_response(indication, *args, **kwargs):
         the_response = Mock(spec=Response)
         the_response.status_code = 200
-        json_result = {"good_job": ("with_mock_" + indication)}
+        json_result = {"good_job": f"with_mock_{indication}"}
         the_response.content = json.dumps(json_result).encode("utf-8")
 
         return the_response

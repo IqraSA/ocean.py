@@ -72,7 +72,7 @@ def split_signature(signature: Any) -> Signature:
     v = Web3.toInt(signature[-1])
     r = to_32byte_hex(int.from_bytes(signature[:32], "big"))
     s = to_32byte_hex(int.from_bytes(signature[32:64], "big"))
-    if v != 27 and v != 28:
+    if v not in [27, 28]:
         v = 27 + v % 2
 
     return Signature(v, r, s)

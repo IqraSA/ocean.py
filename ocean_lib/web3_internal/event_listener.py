@@ -38,7 +38,7 @@ class EventListener(object):
         contract = load_contract(web3, contract_name, address)
         self.event_name = event_name
         self.event = getattr(contract.events, event_name)
-        self.filters = filters if filters else {}
+        self.filters = filters or {}
         self.from_block = from_block if from_block is not None else "latest"
         self.to_block = to_block if to_block is not None else "latest"
         self.event_filter = self.make_event_filter()
@@ -48,13 +48,12 @@ class EventListener(object):
     @enforce_types
     def make_event_filter(self) -> EventFilter:
         """Create a new event filter."""
-        event_filter = EventFilter(
+        return EventFilter(
             self.event(),
             argument_filters=self.filters,
             from_block=self.from_block,
             to_block=self.to_block,
         )
-        return event_filter
 
     @enforce_types
     def listen_once(
@@ -141,12 +140,11 @@ class EventListener(object):
 
         while True:
             try:
-                events = event_filter.get_all_entries()
-                if events:
+                if events := event_filter.get_all_entries():
                     callback(events[0], *args)
                     return
 
-            except (ValueError, Exception) as err:
+            except Exception as err:
                 # ignore error, but log it
                 logger.debug(f"Got error grabbing keeper events: {str(err)}")
 

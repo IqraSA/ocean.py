@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def get_contract_definition(contract_name: str) -> Dict[str, Any]:
     """Returns the abi JSON for a contract name."""
     try:
-        return importlib.import_module("artifacts." + contract_name).__dict__
+        return importlib.import_module(f"artifacts.{contract_name}").__dict__
     except ModuleNotFoundError:
         raise TypeError("Contract name does not exist in artifacts.")
 
@@ -33,8 +33,7 @@ def load_contract(web3: Web3, contract_name: str, address: Optional[str]) -> Con
     contract_definition = get_contract_definition(contract_name)
     abi = contract_definition["abi"]
     bytecode = contract_definition["bytecode"]
-    contract = web3.eth.contract(address=address, abi=abi, bytecode=bytecode)
-    return contract
+    return web3.eth.contract(address=address, abi=abi, bytecode=bytecode)
 
 
 @enforce_types

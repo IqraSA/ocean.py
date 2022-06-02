@@ -52,10 +52,11 @@ def get_address_of_type(
     if address_type not in addresses.keys():
         raise KeyError(f"{address_type} address is not set in the config file")
     address = (
-        addresses[address_type]
-        if not isinstance(addresses[address_type], dict)
-        else addresses[address_type].get(key, addresses[address_type]["1"])
+        addresses[address_type].get(key, addresses[address_type]["1"])
+        if isinstance(addresses[address_type], dict)
+        else addresses[address_type]
     )
+
     return Web3.toChecksumAddress(address)
 
 
@@ -137,7 +138,7 @@ def generate_wallet() -> Wallet:
     web3 = get_web3()
     config = get_example_config()
     secret = secrets.token_hex(32)
-    private_key = "0x" + secret
+    private_key = f"0x{secret}"
 
     generated_wallet = Wallet(
         web3,
@@ -202,10 +203,7 @@ def setup_logging(
     env_key: str = "LOG_CFG",
 ):
     """Logging setup."""
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
+    path = value if (value := os.getenv(env_key, None)) else default_path
     if os.path.exists(path):
         with open(path, "rt") as file:
             try:
@@ -377,7 +375,7 @@ def get_provider_fees(
     )
     signed = keys.ecdsa_sign(message_hash=signable_hash, private_key=pk)
 
-    provider_fee = {
+    return {
         "providerFeeAddress": provider_fee_address,
         "providerFeeToken": provider_fee_token,
         "providerFeeAmount": provider_fee_amount,
@@ -388,7 +386,6 @@ def get_provider_fees(
         "s": web3.toHex(web3.toBytes(signed.s).rjust(32, b"\0")),
         "validUntil": valid_until,
     }
-    return provider_fee
 
 
 def base_token_to_datatoken(
@@ -530,9 +527,7 @@ def join_pool_with_max_base_token(bpool, web3, base_token, wallet, amt: int = 0)
 
     web3.eth.wait_for_transaction_receipt(
         bpool.join_swap_extern_amount_in(
-            amt if amt else max_out_ratio_limit,
-            to_wei("0"),
-            wallet,
+            amt or max_out_ratio_limit, to_wei("0"), wallet
         )
     )
 
@@ -553,8 +548,7 @@ def wallet_exit_pool_one_side(
     web3.eth.wait_for_transaction_receipt(
         bpool.exit_swap_pool_amount_in(
             amt
-            if amt
-            else min(max_out_ratio_limit, pool_token.balanceOf(wallet.address)),
+            or min(max_out_ratio_limit, pool_token.balanceOf(wallet.address)),
             0,
             wallet,
         )
@@ -574,9 +568,7 @@ def join_pool_one_side(web3, bpool, base_token, wallet, amt: int = 0):
 
     web3.eth.wait_for_transaction_receipt(
         bpool.join_swap_extern_amount_in(
-            amt if amt else max_in_ratio_limit,
-            to_wei("0"),
-            wallet,
+            amt or max_in_ratio_limit, to_wei("0"), wallet
         )
     )
 
@@ -606,7 +598,7 @@ def swap_exact_amount_in_base_token(bpool, datatoken, base_token, wallet, amt: i
         base_token.address,
         datatoken.address,
         wallet.address,
-        amt if amt else max_out_ratio_limit,
+        amt or max_out_ratio_limit,
         to_wei("0"),
         to_wei("100000"),
         to_wei("0"),

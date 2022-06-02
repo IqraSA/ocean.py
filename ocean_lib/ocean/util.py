@@ -81,10 +81,11 @@ def get_address_of_type(
     if address_type not in addresses.keys():
         raise KeyError(f"{address_type} address is not set in the config file")
     address = (
-        addresses[address_type]
-        if not isinstance(addresses[address_type], dict)
-        else addresses[address_type].get(key, addresses[address_type]["1"])
+        addresses[address_type].get(key, addresses[address_type]["1"])
+        if isinstance(addresses[address_type], dict)
+        else addresses[address_type]
     )
+
     return Web3.toChecksumAddress(address)
 
 

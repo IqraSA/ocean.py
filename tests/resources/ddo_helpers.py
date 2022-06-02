@@ -120,9 +120,7 @@ def create_asset(ocean, publisher, metadata=None, files=None):
     # Encrypt file(s) using provider
     encrypted_files = ocean.assets.encrypt_files(files)
 
-    # Publish asset with services on-chain.
-    # The download (access service) is automatically created
-    asset = ocean.assets.create(
+    return ocean.assets.create(
         metadata,
         publisher,
         encrypted_files,
@@ -136,8 +134,6 @@ def create_asset(ocean, publisher, metadata=None, files=None):
         datatoken_publish_market_order_fee_amounts=[0],
         datatoken_bytess=[[b""]],
     )
-
-    return asset
 
 
 def create_basics(
